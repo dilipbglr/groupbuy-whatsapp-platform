@@ -1,15 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs_20']
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ['npm ci --only=production']
+cmds = ["npm install"]
 
 [phases.build]
-cmds = [
-  'npm ci --include=dev',
-  'npx tsc',
-  'echo "✅ TypeScript compilation completed"'
-]
+cmds = ["npx tsc"]
 
 [start]
-cmd = 'npm start'
+cmd = "node dist/index.js"
