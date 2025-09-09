@@ -12,7 +12,7 @@ import dealsRoutes from './routes/deals';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // ✅ Supabase client initialized globally (and exported for controllers)
 export const supabase = createClient(
@@ -414,7 +414,7 @@ app.use(errorHandler);
 
 // ===== START SERVER =====
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${corsOptions.origin}`);

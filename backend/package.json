@@ -6,6 +6,9 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "bcryptjs": "^3.0.2",
@@ -16,10 +19,13 @@
     "twilio": "^5.2.0"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "nodemon": "^3.1.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.0",
+    "@types/express": "^4.17.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.0.0",
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   }
 }
