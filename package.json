@@ -1,0 +1,12 @@
+{
+  "name": "groupbuy-whatsapp-platform",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "build": "cd backend && npm install",
+    "dev": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,9 +1,7 @@
-[build] 
-builder = "nixpacks" 
- 
-[deploy] 
-startCommand = "cd backend && npm install && npm start" 
-restartPolicyType = "always" 
- 
-[environments.production] 
-variables = {} 
+[build]
+builder = "nixpacks"
+buildCommand = "cd backend && npm install"
+
+[deploy]
+startCommand = "cd backend && npm start"
+restartPolicyType = "always"
