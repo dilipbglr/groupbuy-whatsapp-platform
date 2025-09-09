@@ -1,0 +1,21 @@
+/* stylelint-disable */
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable */
+
+/* Modern CSS compatibility fix */
+html {
+  text-size-adjust: 100%;         /* ✅ Standard */
+  -ms-text-size-adjust: 100%;     /* ✅ Edge legacy */
+  -moz-text-size-adjust: 100%;    /* ✅ Firefox */
+  -webkit-text-size-adjust: none; /* ✅ Disable deprecated */
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
