@@ -140,14 +140,9 @@ app.get('/healthcheck', (req, res) => {
   });
 });
 
-// ✅ (Optional but recommended) Add fallback health endpoints:
+// ✅ Emergency fallback health endpoint for Railway
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    status: 'ok',
-    service: 'group-buy-backend',
-    timestamp: new Date().toISOString()
-  });
+  res.status(200).send("OK");
 });
 
 app.get('/api/health', (req, res) => {

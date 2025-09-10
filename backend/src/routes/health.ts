@@ -1,8 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from "express";
 import { twilioService } from '../services/twilioService';
 
 const router = Router();
 
+// ✅ Simple plain-text health check for Railway
 router.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
