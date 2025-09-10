@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 // ✅ Register routes
-app.use('/health', healthRoutes);
+app.use('/', healthRoutes); // Mount health routes at root level
 app.use('/whatsapp', whatsappRoutes);
 app.use('/api', dealsRoutes);
 

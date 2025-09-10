@@ -3,6 +3,10 @@ import { twilioService } from '../services/twilioService';
 
 const router = Router();
 
+router.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 router.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
