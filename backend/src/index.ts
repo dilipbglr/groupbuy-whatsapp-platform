@@ -43,6 +43,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
+// ✅ Emergency fallback health endpoint for Railway (at the top)
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
+
 // ✅ Register routes
 app.use('/', healthRoutes); // Mount health routes at root level
 app.use('/whatsapp', whatsappRoutes);
@@ -140,10 +145,6 @@ app.get('/healthcheck', (req, res) => {
   });
 });
 
-// ✅ Emergency fallback health endpoint for Railway
-app.get('/health', (req, res) => {
-  res.status(200).send("OK");
-});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -184,14 +185,6 @@ process.on('uncaughtException', (error) => {
 });
 
 // ===== START SERVER =====
-const server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 CORS enabled for: ${corsOptions.origin}`);
-  console.log(`🎯 API documentation: http://localhost:${PORT}/`);
-});
-
-server.on('error', (err) => {
-  console.error('❌ Server startup error:', err);
-  process.exit(1);
 });
