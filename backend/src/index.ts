@@ -1,7 +1,12 @@
 // backend/src/index.ts
+import dotenv from 'dotenv';
+import path from 'path';
+
+// ✅ Load environment variables FIRST, before any other imports
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { requestLogger } from './middleware/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
@@ -9,7 +14,12 @@ import healthRoutes from './routes/health';
 import whatsappRoutes from './routes/whatsapp';
 import dealsRoutes from './routes/deals';
 
-dotenv.config();
+console.log('✅ ENV DEBUG (Twilio):');
+console.log('TWILIO_ACCOUNT_SID:', process.env.TWILIO_ACCOUNT_SID);
+console.log('TWILIO_AUTH_TOKEN:', process.env.TWILIO_AUTH_TOKEN);
+console.log('TWILIO_MESSAGING_SERVICE_SID:', process.env.TWILIO_MESSAGING_SERVICE_SID);
+
+console.log('🔍 All ENV Vars Loaded:', process.env);
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -149,6 +159,19 @@ app.get('/api/health', (req, res) => {
       '/api/users', '/whatsapp/webhook'
     ],
     timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/health/detailed', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    services: {
+      twilio: {
+        enabled: !!process.env.TWILIO_MESSAGING_SERVICE_SID,
+        sid: process.env.TWILIO_MESSAGING_SERVICE_SID?.slice(0, 6) + '****',
+      },
+    }
   });
 });
 

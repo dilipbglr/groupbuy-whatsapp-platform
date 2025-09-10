@@ -1,62 +1,81 @@
-import twilio from 'twilio';
-import dotenv from 'dotenv';
-import { logger } from '../middleware/logger';
+// src/services/twilioService.ts
+import { ServiceBase } from './base/ServiceBase';
+import { serviceConfigs } from '../config/services';
 
-dotenv.config();
-
-// Debug logging - REMOVE THIS AFTER FIXING
-console.log('🔍 TWILIO DEBUG INFO:');
-console.log('TWILIO_ACCOUNT_SID:', process.env.TWILIO_ACCOUNT_SID);
-console.log('TWILIO_AUTH_TOKEN:', process.env.TWILIO_AUTH_TOKEN?.substring(0, 8) + '...');
-console.log('TWILIO_WHATSAPP_NUMBER:', process.env.TWILIO_WHATSAPP_NUMBER);
-console.log('========================');
-
-if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_NUMBER) {
-  console.error('❌ MISSING TWILIO ENVIRONMENT VARIABLES!');
-  throw new Error('Twilio configuration is incomplete');
+export interface WhatsAppMessage {
+  to: string;
+  message: string;
+  mediaUrl?: string;
 }
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
-);
+export interface WhatsAppResponse {
+  success: boolean;
+  messageId?: string;
+  error?: string;
+  mock?: boolean;
+}
 
-const FROM = process.env.TWILIO_WHATSAPP_NUMBER!;
+class TwilioService extends ServiceBase {
+  private client: any = null;
 
-export const twilioService = {
-  sendMessage: async (to: string, body: string) => {
-    try {
-      logger.info('Sending WhatsApp message', {
-        to,
-        body,
-        from: FROM,
-        source: 'twilioService > sendMessage',
-      });
+  constructor() {
+    super('Twilio', serviceConfigs.twilio);
+  }
 
-      const message = await client.messages.create({
-        from: FROM,
-        to,
-        body,
-      });
+  protected initialize(config: Record<string, any>) {
+    const twilio = require('twilio');
+    this.client = twilio(config.accountSid, config.authToken);
+    this.client.api.accounts(config.accountSid).fetch(); // ping test
+  }
 
-      logger.info('WhatsApp message sent successfully', {
-        to,
-        messageSid: message.sid,
-        status: message.status,
-        source: 'twilioService > sendMessage',
-      });
+  async sendMessage(to: string, message: string): Promise<WhatsAppResponse> {
+    return this.sendWhatsAppMessage({ to, message });
+  }
 
-      return message;
-    } catch (error: any) {
-      logger.error('Failed to send WhatsApp message', error, {
-        to,
-        body,
-        from: FROM,
-        source: 'twilioService > sendMessage',
-        code: error?.code,
-        message: error?.message,
-      });
-      throw error;
+  async sendWhatsAppMessage(data: WhatsAppMessage): Promise<WhatsAppResponse> {
+    if (!this.enabled) {
+      console.log(`🔕 Mock mode: WhatsApp message to ${data.to}: ${data.message}`);
+      return { success: false, error: 'Twilio disabled', mock: true };
     }
-  },
-};
+
+    try {
+      const msg = await this.client.messages.create({
+        messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
+        to: data.to,
+        body: data.message,
+        ...(data.mediaUrl && { mediaUrl: [data.mediaUrl] }),
+      });
+      
+      console.log(`✅ WhatsApp Message sent! SID: ${msg.sid}`);
+      console.log(`✅ Sent to: ${data.to}, SID: ${msg.sid}, Preview: ${data.message.slice(0, 50)}...`);
+      
+      return { success: true, messageId: msg.sid };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async sendBulk(messages: WhatsAppMessage[]): Promise<WhatsAppResponse[]> {
+    if (!this.enabled) {
+      return messages.map(() => ({ success: false, error: 'Twilio disabled', mock: true }));
+    }
+
+    const results = await Promise.allSettled(
+      messages.map(msg => this.sendWhatsAppMessage(msg))
+    );
+
+    return results.map(r =>
+      r.status === 'fulfilled' ? r.value : { success: false, error: 'Send failed' }
+    );
+  }
+
+  getStatus() {
+    return {
+      enabled: this.enabled,
+      service: 'Twilio',
+      capabilities: this.enabled ? ['whatsapp'] : ['mock_logging']
+    };
+  }
+}
+
+export const twilioService = new TwilioService();
