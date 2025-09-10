@@ -22,3 +22,32 @@ dist/
 # System folders
 .railway/
 .supabase/
+
+
+
+# === Dependencies ===
+node_modules/
+
+# === Build Artifacts ===
+dist/
+
+# === Environment Files ===
+.env
+*.env
+*.env.*
+
+# === Logs ===
+*.log
+
+# === IDE and Editor Configs ===
+.vscode/
+.idea/
+
+# === OS Generated Files ===
+.DS_Store
+
+# === Railway Config ===
+.railway/
+
+# === Supabase Local Files ===
+.supabase/
